@@ -1,0 +1,39 @@
+@startuml
+
+header FastAPI Auth Ylab Homework
+title Диаграмма прецедентов
+
+left to right direction
+
+rectangle "Пользователи" {
+  usecase "Создать аккаунт" as create_acc
+  usecase "Войти в аккаунт" as login
+  usecase "Просмотреть свой профиль" as view_my_prof
+  usecase "Изменить свои данные" as update_my_prof
+  usecase "Выйти из аккаунта" as logout
+  usecase "Выйти из аккаунта со всех устройств" as logout_all
+}
+
+rectangle "Посты" {
+  usecase "Просмотреть список постов" as watch_post_list
+  usecase "Просмотреть пост" as watch_post
+  usecase "Создать пост" as create_post
+}
+
+
+actor "Гость" as guest
+actor "Пользователь" as user
+
+guest -r-> create_acc
+guest -d-> login
+guest --> watch_post
+guest -l-> watch_post_list
+user -l-> view_my_prof
+user -d-> update_my_prof
+user -r-> create_post
+user -l-> watch_post
+user -l-> watch_post_list
+user -d-> logout
+user -l-> logout_all
+
+@enduml

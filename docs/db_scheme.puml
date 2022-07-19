@@ -1,0 +1,48 @@
+@startuml
+
+header FastAPI Auth Ylab Homework
+title Схема БД
+
+hide circle
+skinparam linetype ortho
+
+
+entity posts {
+  * **id**  :  int
+  __
+  * **title**  :  varchar
+  --
+  * **description**  :  varchar
+  --
+  * **views**  :  int
+  --
+  * **created_at**  :  datetime
+  --
+  * **author_id**  :  str
+}
+
+
+entity users {
+  * **uuid**  :  str
+  --
+  * **username**  :  str
+  --
+  * **email**  :  str
+  --
+  * **hashed_password**  :  str
+  --
+  * **created_at**: datetime
+  --
+  * **is_superuser**: bool
+  --
+  * **is_totp_enabled**: bool
+  --
+  * **is_active**: bool
+}
+
+
+
+posts }|--|| users
+
+
+@enduml
