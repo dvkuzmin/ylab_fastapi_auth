@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "6fd37522-e4a3-4229-9e65-00c5fc13764c",
-		"name": "ylab homework 4 auth app",
+		"name": "FastAPI auth",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "19846748"
 	},

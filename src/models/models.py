@@ -3,13 +3,14 @@ from datetime import datetime
 from typing import Optional, List
 
 from sqlmodel import Field, SQLModel, Relationship
+from sqlalchemy import Column, String
 
 __all__ = ("Post", "User",)
 
 
 class User(SQLModel, table=True):
     uuid: str = Field(default=None, primary_key=True)
-    username: str = Field(nullable=False)
+    username: str = Field(sa_column=Column("username", String, unique=True, nullable=False, index=True))
     email: str = Field(nullable=False)
     hashed_password: str = Field(nullable=False)
     created_at: datetime = Field(default=datetime.utcnow(), nullable=False)

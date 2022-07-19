@@ -82,18 +82,20 @@ class UserService(UserServiceMixin):
             email=user.email,
             hashed_password=hashed_password
         )
-        self.session.add(new_user)
-        self.session.commit()
-        self.session.refresh(new_user)
-        return UserModel(**new_user.dict())
+        try:
+            self.session.add(new_user)
+            self.session.commit()
+            self.session.refresh(new_user)
+            return UserModel(**new_user.dict())
+        except Exception:
+            return
 
     def get_user_by_credentials(self, user_login: UserLogin) -> Optional[UserModel]:
         """Получение пользователя по имени-паролю"""
-        users = self.session.query(User).filter(User.username == user_login.username).all()
-        if users:
-            for user in users:
-                if user.hashed_password == hashlib.sha256(user_login.password.encode()).hexdigest():
-                    return UserModel(**user.dict())
+        user = self.session.query(User).filter(User.username == user_login.username).one_or_none()
+        if user:
+            if user.hashed_password == hashlib.sha256(user_login.password.encode()).hexdigest():
+                return UserModel(**user.dict())
 
     def generate_refresh_token(self, user: UserModel) -> tuple:
         """Генерация refresh токена и добавление его uuid в редис"""
@@ -189,13 +191,8 @@ class UserService(UserServiceMixin):
                     user.hashed_password = hashlib.sha256(user_update.password.encode()).hexdigest()
                 self.session.commit()
                 self.session.refresh(user)
-                self.active_refresh_tokens_cache.remove(
-                    data.get("user_uuid"),
-                    data.get("refresh_uuid")
-                )
                 self._block_access_token(data.get("jti"))
-                refresh_token, refresh_token_uuid = self.generate_refresh_token(user)
-                access_token = self.generate_access_token(user, refresh_token_uuid)
+                access_token = self.generate_access_token(user, data.get("refresh_uuid"))
                 return UserModel(**user.dict()), access_token
 
     def logout(self, auth_header: str) -> Optional[dict]:

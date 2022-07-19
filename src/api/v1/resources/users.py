@@ -20,10 +20,12 @@ def register(
         user_service: UserService = Depends(get_user_service)
 ):
     user = user_service.register(user=user_create)
-    return {
-        "msg": "User created.",
-        "user": user
-    }
+    if user:
+        return {
+            "msg": "User created.",
+            "user": user
+        }
+    return {"msg": "Such username already exists"}
 
 
 @router.post(
