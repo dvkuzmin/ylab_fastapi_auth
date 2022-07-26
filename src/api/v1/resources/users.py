@@ -19,13 +19,20 @@ def register(
         user_create: UserCreate,
         user_service: UserService = Depends(get_user_service)
 ):
-    user = user_service.register(user=user_create)
-    if user:
+    error_messages = {
+        "Error in database": HTTPStatus.INTERNAL_SERVER_ERROR,
+        "User with such name already exists": HTTPStatus.BAD_REQUEST
+    }
+    result = user_service.register(user=user_create)
+    if isinstance(result, UserModel):
         return {
             "msg": "User created.",
-            "user": user
+            "user": result
         }
-    return {"msg": "Such username already exists"}
+    raise HTTPException(
+        status_code=error_messages[result],
+        detail=result
+    )
 
 
 @router.post(

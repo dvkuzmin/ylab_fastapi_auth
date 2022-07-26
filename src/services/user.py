@@ -1,10 +1,11 @@
 from functools import lru_cache
 import hashlib
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
 from uuid import uuid4
 import datetime
 
 from fastapi import Depends
+from sqlalchemy.exc import ProgrammingError, IntegrityError
 from sqlmodel import Session
 import jwt
 
@@ -41,7 +42,7 @@ class UserService(UserServiceMixin):
             if self.blocked_access_tokens_cache.get(access_token_uuid) is None:
                 if not self._is_token_expires(exp_time):
                     # Проверяем, не был ли сделан выход со всех устройств
-                    if refresh_tokens := self.active_refresh_tokens_cache.cache.smembers(user_uuid):
+                    if refresh_tokens := self.active_refresh_tokens_cache.get_all(user_uuid):
                         for token_id in refresh_tokens:
                             if token_id == refresh_token_uuid:
                                 return True
@@ -73,7 +74,7 @@ class UserService(UserServiceMixin):
         if user:
             return UserModel(**user.dict())
 
-    def register(self, user: UserCreate) -> UserModel:
+    def register(self, user: UserCreate) -> Union[UserModel, str]:
         """Регистрация пользователя"""
         hashed_password = hashlib.sha256(user.password.encode()).hexdigest()
         new_user = User(
@@ -87,8 +88,10 @@ class UserService(UserServiceMixin):
             self.session.commit()
             self.session.refresh(new_user)
             return UserModel(**new_user.dict())
-        except Exception:
-            return
+        except ProgrammingError:
+            return "Error in database"
+        except IntegrityError:
+            return "User with such name already exists"
 
     def get_user_by_credentials(self, user_login: UserLogin) -> Optional[UserModel]:
         """Получение пользователя по имени-паролю"""
