@@ -56,7 +56,7 @@ class RefreshCacheRedis(RefreshAbstractCache):
         self,
         key: str
     ):
-        self.cache.smembers(key)
+        return self.cache.smembers(key)
 
     def clear(
         self,

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6fd37522-e4a3-4229-9e65-00c5fc13764c",
+		"_postman_id": "db9411ad-74f1-4c91-8152-96bf01f946a0",
 		"name": "FastAPI auth",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "19846748"
@@ -143,7 +143,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"pr_zoom@mail.ru\",\r\n    \"password\": \"Qwerty123\"\r\n}",
+					"raw": "{\r\n    \"username\": \"{{test_username}}\",\r\n    \"password\": \"{{test_password}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -252,14 +252,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LOCAL_URL}}/api/v1/users/me",
+					"raw": "{{LOCAL_URL}}/api/v1/me",
 					"host": [
 						"{{LOCAL_URL}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"users",
 						"me"
 					]
 				}
@@ -339,6 +338,13 @@
 							"\r",
 							"\r",
 							"tests['Response contains \"access_token\" property'] = responseJSON.hasOwnProperty('access_token');\r",
+							"\r",
+							"if(tests['Response contains \"access_token\" property']) {\r",
+							"    pm.environment.set('access_token', responseJSON.access_token);\r",
+							"}\r",
+							"if(tests['Response contains \"refresh_token\" property']) {\r",
+							"    pm.environment.set('refresh_token', responseJSON.refresh_token);\r",
+							"}\r",
 							""
 						],
 						"type": "text/javascript"
@@ -374,7 +380,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": {{test_username}},\r\n    \"email\": \"{{test_email}}\"\r\n}",
+					"raw": "{\r\n    \"username\": \"{{test_username}}\",\r\n    \"email\": \"{{test_email}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -382,14 +388,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL_URL}}/api/v1/users/me",
+					"raw": "{{LOCAL_URL}}/api/v1/me",
 					"host": [
 						"{{LOCAL_URL}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"users",
 						"me"
 					]
 				}

@@ -42,7 +42,7 @@ class UserService(UserServiceMixin):
             if self.blocked_access_tokens_cache.get(access_token_uuid) is None:
                 if not self._is_token_expires(exp_time):
                     # Проверяем, не был ли сделан выход со всех устройств
-                    if refresh_tokens := self.active_refresh_tokens_cache.cache.smembers(user_uuid):
+                    if refresh_tokens := self.active_refresh_tokens_cache.get_all(user_uuid):
                         for token_id in refresh_tokens:
                             if token_id == refresh_token_uuid:
                                 return True
@@ -54,7 +54,7 @@ class UserService(UserServiceMixin):
         refresh_token_uuid = payload.get("jti")
         exp_time = payload.get("exp")
         if not self._is_token_expires(exp_time):
-            for token_id in self.active_refresh_tokens_cache.cache.smembers(user_uuid):
+            for token_id in self.active_refresh_tokens_cache.get_all(user_uuid):
                 if token_id == refresh_token_uuid:
                     return True
 
@@ -222,7 +222,7 @@ class UserService(UserServiceMixin):
                 return {"msg": "You have been logged out from all devices."}
 
 
-# get_post_service — это провайдер PostService. Синглтон
+# get_post_service — это провайдер UserService. Синглтон
 @lru_cache()
 def get_user_service(
         access_tokens_cache: AccessAbstractCache = Depends(get_access_cache),
