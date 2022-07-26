@@ -42,7 +42,7 @@ class UserService(UserServiceMixin):
             if self.blocked_access_tokens_cache.get(access_token_uuid) is None:
                 if not self._is_token_expires(exp_time):
                     # Проверяем, не был ли сделан выход со всех устройств
-                    if refresh_tokens := self.active_refresh_tokens_cache.get_all(user_uuid):
+                    if refresh_tokens := self.active_refresh_tokens_cache.cache.smembers(user_uuid):
                         for token_id in refresh_tokens:
                             if token_id == refresh_token_uuid:
                                 return True
